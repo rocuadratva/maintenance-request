@@ -716,6 +716,9 @@ body::before {
 .access-gate {
   background: var(--accent-light);
   border-bottom: 1px solid var(--accent-mid) !important;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  margin-bottom: var(--sp-4);
 }
 
 .access-gate--verified {
