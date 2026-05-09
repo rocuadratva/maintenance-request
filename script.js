@@ -546,6 +546,76 @@
     }
   }
 
+  // Testing — fill form and go to success screen — remove before going live
+  function initTestFillBtn() {
+    var btn = document.getElementById('testFillBtn');
+    if (!btn) return;
+
+    btn.addEventListener('click', function () {
+      // Property (only if visible)
+      var propertyField = document.getElementById('propertyField');
+      if (!propertyField || !propertyField.hidden) {
+        var propertySel = document.getElementById('property');
+        for (var i = 0; i < propertySel.options.length; i++) {
+          if (propertySel.options[i].value === 'Sunrise Apartments - Unit 101') {
+            propertySel.selectedIndex = i; break;
+          }
+        }
+      }
+
+      // Urgency
+      document.getElementById('urgency').value = 'urgent';
+      document.querySelectorAll('.urgency-btn').forEach(function (b) {
+        b.setAttribute('aria-pressed', b.dataset.value === 'urgent' ? 'true' : 'false');
+      });
+      var slider = document.getElementById('urgencySlider');
+      if (slider) slider.className = 'urgency-control__slider urgency-control__slider--urgent';
+
+      // Problem details
+      var ptSel = document.getElementById('problemType');
+      for (var j = 0; j < ptSel.options.length; j++) {
+        if (ptSel.options[j].value === 'Plumbing – Leak or drip') { ptSel.selectedIndex = j; break; }
+      }
+      var locSel = document.getElementById('locationInUnit');
+      for (var k = 0; k < locSel.options.length; k++) {
+        if (locSel.options[k].value === 'Kitchen') { locSel.selectedIndex = k; break; }
+      }
+
+      // Description
+      document.getElementById('description').value =
+        'There is a leak under the kitchen sink that has been dripping for two days. ' +
+        'The cabinet below is getting wet and there is water damage starting on the floor.';
+
+      // Tenant info (only if visible)
+      var tenantSection = document.getElementById('tenantInfoSection');
+      if (!tenantSection || !tenantSection.hidden) {
+        document.getElementById('tenantName').value  = 'Jane Smith';
+        document.getElementById('tenantEmail').value = 'jane@example.com';
+        document.getElementById('tenantPhone').value = '(555) 012-3456';
+      }
+
+      // Access & availability
+      document.getElementById('permissionToEnter').value = 'Yes';
+      document.getElementById('bestTime').value = 'Morning';
+
+      // Preferred days
+      var dayValues = ['Mon', 'Wed', 'Fri'];
+      document.querySelectorAll('.day-btn').forEach(function (b) {
+        b.setAttribute('aria-pressed', dayValues.indexOf(b.dataset.value) !== -1 ? 'true' : 'false');
+      });
+      document.getElementById('preferredDays').value = dayValues.join(', ');
+
+      // Short delay then show success
+      btn.disabled = true;
+      btn.textContent = 'Submitting…';
+      setTimeout(function () {
+        showSuccess('https://drive.google.com/drive/folders/demo-folder-id');
+        btn.disabled = false;
+        btn.textContent = '⚡ Fill & Submit (testing)';
+      }, 900);
+    });
+  }
+
   /* ── Status Checker ───────────────────────────────────────────── */
   function initStatusChecker() {
     var input    = document.getElementById('statusRefInput');
@@ -703,6 +773,7 @@
     initUrgencyControl();
     initDaysControl();
     initForm();
+    initTestFillBtn();
     initStatusChecker();
     tryRestoreSession();
   });
