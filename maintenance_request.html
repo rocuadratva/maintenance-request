@@ -28,6 +28,33 @@
     <!-- Form -->
     <form id="maintenanceForm" novalidate>
 
+      <!-- Access Code Gate -->
+      <section class="form-section access-gate">
+        <div class="access-gate__inner">
+          <div class="access-gate__icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="7" width="10" height="8" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+              <path d="M5 7V5a3 3 0 1 1 6 0v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="field access-gate__field">
+            <label class="field__label field__label--required" for="accessCode">Access Code</label>
+            <p class="access-gate__hint">Provided by your property manager when you moved in.</p>
+            <input
+              class="field__input access-gate__input"
+              type="text"
+              id="accessCode"
+              name="accessCode"
+              required
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="Enter your access code"
+            />
+            <span class="field__error" id="accessCode-error">Invalid access code. Please check with your property manager.</span>
+          </div>
+        </div>
+      </section>
+
       <!-- Section 1: Property + Urgency -->
       <section class="form-section">
         <span class="section-label"><span class="section-num">1</span> Property &amp; Priority</span>

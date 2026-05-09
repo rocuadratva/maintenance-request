@@ -2,6 +2,10 @@ const CONFIG = {
   webhookUrl: 'https://n8n.srv1326537.hstgr.cloud/webhook-test/maintenance-submit',
   statusWebhookUrl: 'YOUR_N8N_STATUS_WEBHOOK_URL',
 
+  // Tenants must enter one of these codes to submit a request.
+  // Add, remove, or rotate codes here at any time.
+  accessCodes: ['TENANT2026', 'MAPLE24', 'SUNRISE7'],
+
   properties: [
     'Sunrise Apartments - Unit 101',
     'Sunrise Apartments - Unit 102',

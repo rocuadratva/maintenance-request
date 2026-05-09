@@ -117,6 +117,7 @@
 
   /* ── Validation ───────────────────────────────────────────────── */
   const REQUIRED_FIELDS = [
+    { id: 'accessCode',      errorId: 'accessCode-error' },
     { id: 'property',        errorId: 'property-error' },
     { id: 'problemType',     errorId: 'problemType-error' },
     { id: 'locationInUnit',  errorId: 'locationInUnit-error' },
@@ -140,6 +141,10 @@
 
       var invalid = !val;
       if (f.id === 'tenantEmail' && val && !EMAIL_RE.test(val)) invalid = true;
+      if (f.id === 'accessCode' && val) {
+        var validCodes = (CONFIG.accessCodes || []).map(function (c) { return c.toUpperCase(); });
+        if (validCodes.indexOf(val.toUpperCase()) === -1) invalid = true;
+      }
 
       if (invalid) {
         el.setAttribute('aria-invalid', 'true');
