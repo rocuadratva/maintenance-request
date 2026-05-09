@@ -233,6 +233,87 @@
       <p class="form-footer__note">Fields marked * are required. We'll follow up within one business day.</p>
     </footer>
 
+    <!-- Status Checker -->
+    <section class="status-checker" id="statusChecker" aria-label="Check request status">
+
+      <div class="status-checker__header">
+        <div class="status-checker__icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="9" cy="9" r="7.25" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M9 5.5v4l2.5 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="status-checker__title">Check Request Status</h2>
+          <p class="status-checker__subtitle">Enter your reference number to see the current status of your request.</p>
+        </div>
+      </div>
+
+      <div class="status-checker__form">
+        <div class="status-checker__input-row">
+          <input
+            class="status-checker__input"
+            type="text"
+            id="statusRefInput"
+            placeholder="MR-2026-XXXX"
+            autocomplete="off"
+            spellcheck="false"
+            maxlength="15"
+            aria-label="Reference number"
+          />
+          <button class="status-checker__btn" id="statusCheckBtn" type="button">
+            <span class="status-checker__btn-label" id="statusBtnLabel">Check Status</span>
+            <div class="dot-pulse status-checker__btn-dots" id="statusDotPulse" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+          </button>
+        </div>
+        <p class="status-checker__input-hint" id="statusInputHint" aria-live="polite"></p>
+      </div>
+
+      <div class="status-result" id="statusResult" hidden>
+
+        <div class="status-result__not-found" id="statusNotFound" hidden>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <circle cx="8" cy="8" r="6.25" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M8 5v3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="8" cy="11" r="0.75" fill="currentColor"/>
+          </svg>
+          <span>No request found for that reference number. Please double-check and try again.</span>
+        </div>
+
+        <div class="status-result__card" id="statusCard" hidden>
+          <div class="status-result__top">
+            <div class="status-result__ref-row">
+              <span class="status-result__ref" id="statusCardRef"></span>
+              <span class="status-badge" id="statusBadge"></span>
+            </div>
+            <p class="status-result__submitted" id="statusCardSubmitted"></p>
+          </div>
+          <div class="status-result__details">
+            <div class="status-result__detail">
+              <span class="status-result__detail-key">Property</span>
+              <span class="status-result__detail-val" id="statusCardProperty"></span>
+            </div>
+            <div class="status-result__detail">
+              <span class="status-result__detail-key">Problem type</span>
+              <span class="status-result__detail-val" id="statusCardProblemType"></span>
+            </div>
+            <div class="status-result__detail">
+              <span class="status-result__detail-key">Tenant</span>
+              <span class="status-result__detail-val" id="statusCardTenant"></span>
+            </div>
+          </div>
+          <div class="status-result__notes" id="statusCardNotesWrap" hidden>
+            <span class="status-result__notes-label">Notes from management</span>
+            <p class="status-result__notes-body" id="statusCardNotes"></p>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
     <!-- Success State -->
     <div class="success-state" id="successState" hidden>
       <div class="success-card">

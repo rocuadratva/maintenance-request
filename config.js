@@ -1,5 +1,6 @@
 const CONFIG = {
   webhookUrl: 'https://n8n.srv1326537.hstgr.cloud/webhook-test/maintenance-submit',
+  statusWebhookUrl: 'YOUR_N8N_STATUS_WEBHOOK_URL',
 
   properties: [
     'Sunrise Apartments - Unit 101',

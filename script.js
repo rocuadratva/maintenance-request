@@ -337,6 +337,157 @@
     });
   }
 
+  /* ── Status Checker ───────────────────────────────────────────── */
+  function initStatusChecker() {
+    var input    = document.getElementById('statusRefInput');
+    var btn      = document.getElementById('statusCheckBtn');
+    var btnLabel = document.getElementById('statusBtnLabel');
+    var btnDots  = document.getElementById('statusDotPulse');
+    var hint     = document.getElementById('statusInputHint');
+    var result   = document.getElementById('statusResult');
+    var notFound = document.getElementById('statusNotFound');
+    var card     = document.getElementById('statusCard');
+
+    var BADGE_CLASS = {
+      'submitted':   'status-badge--submitted',
+      'in progress': 'status-badge--in-progress',
+      'scheduled':   'status-badge--scheduled',
+      'resolved':    'status-badge--resolved',
+    };
+
+    function setChecking(on) {
+      btn.disabled = on;
+      btnLabel.style.opacity = on ? '0' : '1';
+      btnDots.classList.toggle('status-checker__btn-dots--visible', on);
+    }
+
+    function clearResult() {
+      result.hidden   = true;
+      notFound.hidden = true;
+      card.hidden     = true;
+    }
+
+    function reAnimate() {
+      result.style.animation = 'none';
+      result.offsetHeight;
+      result.style.animation = '';
+    }
+
+    function showNotFound() {
+      clearResult();
+      notFound.hidden = false;
+      result.hidden   = false;
+      reAnimate();
+    }
+
+    function showCard(data) {
+      clearResult();
+
+      document.getElementById('statusCardRef').textContent = data.referenceNumber || '';
+
+      var badge = document.getElementById('statusBadge');
+      var statusKey = (data.status || '').toLowerCase().trim();
+      badge.textContent = data.status || '';
+      badge.className = 'status-badge ' + (BADGE_CLASS[statusKey] || 'status-badge--submitted');
+
+      var submitted = '';
+      if (data.submittedAt) {
+        try {
+          submitted = 'Submitted ' + new Date(data.submittedAt).toLocaleDateString('en-US', {
+            month: 'long', day: 'numeric', year: 'numeric'
+          });
+        } catch (_) { submitted = data.submittedAt; }
+      }
+      document.getElementById('statusCardSubmitted').textContent = submitted;
+      document.getElementById('statusCardProperty').textContent    = data.property    || '—';
+      document.getElementById('statusCardProblemType').textContent = data.problemType || '—';
+      document.getElementById('statusCardTenant').textContent      = data.tenantName  || '—';
+
+      var notesWrap = document.getElementById('statusCardNotesWrap');
+      var notesBody = document.getElementById('statusCardNotes');
+      var notes = (data.notes || '').trim();
+      if (notes) {
+        notesBody.textContent = notes;
+        notesWrap.hidden = false;
+      } else {
+        notesWrap.hidden = true;
+      }
+
+      card.hidden   = false;
+      result.hidden = false;
+      reAnimate();
+    }
+
+    function validateInput() {
+      var val = input.value.trim().toUpperCase();
+      if (!val) {
+        hint.textContent = 'Please enter a reference number.';
+        input.classList.add('status-checker__input--error');
+        return null;
+      }
+      hint.textContent = '';
+      input.classList.remove('status-checker__input--error');
+      return val;
+    }
+
+    async function checkStatus() {
+      var ref = validateInput();
+      if (!ref) return;
+
+      if (!CONFIG.statusWebhookUrl || CONFIG.statusWebhookUrl === 'YOUR_N8N_STATUS_WEBHOOK_URL') {
+        setChecking(true);
+        setTimeout(function () {
+          setChecking(false);
+          showCard({
+            referenceNumber: ref,
+            status: 'In Progress',
+            submittedAt: new Date().toISOString(),
+            property: 'Sunrise Apartments - Unit 101',
+            problemType: 'Plumbing – Leak or drip',
+            tenantName: 'Jane Smith',
+            notes: 'A technician has been assigned and will contact you by Thursday.',
+          });
+        }, 900);
+        return;
+      }
+
+      setChecking(true);
+      clearResult();
+
+      try {
+        var response = await fetch(CONFIG.statusWebhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ referenceNumber: ref }),
+        });
+
+        if (response.status === 404) { showNotFound(); return; }
+        if (!response.ok) throw new Error('Server error ' + response.status);
+
+        var data = await response.json();
+        if (Array.isArray(data)) data = data[0];
+        if (!data || !data.referenceNumber) { showNotFound(); return; }
+
+        showCard(data);
+      } catch (err) {
+        hint.textContent = 'Unable to check status. Please try again shortly.';
+      } finally {
+        setChecking(false);
+      }
+    }
+
+    btn.addEventListener('click', checkStatus);
+
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); checkStatus(); }
+    });
+
+    input.addEventListener('input', function () {
+      hint.textContent = '';
+      input.classList.remove('status-checker__input--error');
+    });
+  }
+
   /* ── Init ─────────────────────────────────────────────────────── */
   document.addEventListener('DOMContentLoaded', function () {
     populateSelects();
@@ -344,5 +495,6 @@
     initUrgencyControl();
     initDropZone();
     initForm();
+    initStatusChecker();
   });
 })();
