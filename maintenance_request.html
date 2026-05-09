@@ -69,6 +69,11 @@
         </div>
       </section>
 
+      <!-- Testing bypass button — remove before going live -->
+      <div style="text-align:center;margin-top:-8px;margin-bottom:4px">
+        <button type="button" id="testSkipBtn" style="font-size:11px;padding:4px 10px;border:1px dashed #94A3B8;border-radius:6px;background:transparent;color:#94A3B8;cursor:pointer;font-family:var(--font-body)">⚡ Skip gate (testing)</button>
+      </div>
+
       <div class="form-body" id="formBody" hidden>
 
       <!-- Section 1: Property + Urgency -->
@@ -222,6 +227,20 @@
               </select>
               <span class="field__error" id="bestTime-error">Please select a best time.</span>
             </div>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="preferredDays">Preferred days</label>
+            <div class="days-control" role="group" aria-label="Preferred days">
+              <button type="button" class="day-btn" data-value="Mon" aria-pressed="false">Mon</button>
+              <button type="button" class="day-btn" data-value="Tue" aria-pressed="false">Tue</button>
+              <button type="button" class="day-btn" data-value="Wed" aria-pressed="false">Wed</button>
+              <button type="button" class="day-btn" data-value="Thu" aria-pressed="false">Thu</button>
+              <button type="button" class="day-btn" data-value="Fri" aria-pressed="false">Fri</button>
+              <button type="button" class="day-btn" data-value="Sat" aria-pressed="false">Sat</button>
+              <button type="button" class="day-btn" data-value="Sun" aria-pressed="false">Sun</button>
+            </div>
+            <input type="hidden" id="preferredDays" name="preferredDays" value="">
           </div>
 
         </div>

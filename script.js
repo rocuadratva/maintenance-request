@@ -63,6 +63,24 @@
     });
   }
 
+  /* ── Preferred Days Control ──────────────────────────────────── */
+  function initDaysControl() {
+    const btns = document.querySelectorAll('.day-btn');
+    const hiddenInput = document.getElementById('preferredDays');
+
+    btns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const pressed = btn.getAttribute('aria-pressed') === 'true';
+        btn.setAttribute('aria-pressed', pressed ? 'false' : 'true');
+
+        const selected = Array.from(btns)
+          .filter(function (b) { return b.getAttribute('aria-pressed') === 'true'; })
+          .map(function (b) { return b.dataset.value; });
+        hiddenInput.value = selected.join(', ');
+      });
+    });
+  }
+
   /* ── File Drop Zone ───────────────────────────────────────────── */
   function initDropZone() {
     const zone = document.getElementById('dropZone');
@@ -182,6 +200,7 @@
     fd.append('tenantPhone',      document.getElementById('tenantPhone').value.trim());
     fd.append('permissionToEnter',document.getElementById('permissionToEnter').value);
     fd.append('bestTime',         document.getElementById('bestTime').value);
+    fd.append('preferredDays',    document.getElementById('preferredDays').value);
 
     var photoInput = document.getElementById('photo');
     if (photoInput.files[0]) {
@@ -290,6 +309,12 @@
     var slider = document.getElementById('urgencySlider');
     if (slider) slider.className = 'urgency-control__slider urgency-control__slider--normal';
     document.getElementById('urgency').value = 'normal';
+
+    // Reset preferred days
+    document.querySelectorAll('.day-btn').forEach(function (btn) {
+      btn.setAttribute('aria-pressed', 'false');
+    });
+    document.getElementById('preferredDays').value = '';
 
     // Clear photo preview
     document.getElementById('photoPreview').classList.remove('drop-zone__preview--visible');
@@ -421,6 +446,17 @@
     input.addEventListener('input', function () {
       errorEl.classList.remove('field__error--visible');
     });
+
+    // Testing bypass — remove before going live
+    var skipBtn = document.getElementById('testSkipBtn');
+    if (skipBtn) {
+      skipBtn.addEventListener('click', function () {
+        onVerified('TEST');
+        skipBtn.style.display = 'none';
+        var section5 = document.querySelector('.form-section:nth-of-type(6)');
+        if (section5) section5.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
   }
 
   /* ── Status Checker ───────────────────────────────────────────── */
@@ -580,6 +616,7 @@
     initHeader();
     initAccessCodeGate();
     initUrgencyControl();
+    initDaysControl();
     initDropZone();
     initForm();
     initStatusChecker();
