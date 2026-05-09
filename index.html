@@ -351,42 +351,6 @@
           </div>
         </section>
 
-        <!-- Section 6: Photo Upload -->
-        <section class="form-section">
-          <span class="section-label"><span class="section-num">6</span> Photo <span style="font-weight:400;color:var(--ink-light);font-size:12px">(optional)</span></span>
-          <div class="field-group">
-            <div class="field">
-              <div class="drop-zone" id="dropZone">
-                <input
-                  class="drop-zone__input"
-                  type="file"
-                  id="photo"
-                  name="photo"
-                  accept="image/*,.pdf"
-                />
-                <svg class="drop-zone__icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="3" y="5" width="26" height="22" rx="1" stroke="currentColor" stroke-width="1.5"/>
-                  <circle cx="11" cy="12" r="2.5" stroke="currentColor" stroke-width="1.5"/>
-                  <path d="M3 22l7-7 5 5 4-4 10 7" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-                </svg>
-                <p class="drop-zone__label">
-                  <strong>Click to upload</strong> or drag and drop<br>
-                  JPG, PNG, HEIC, PDF — max 10 MB
-                </p>
-              </div>
-
-              <div class="drop-zone__preview" id="photoPreview">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;opacity:0.5">
-                  <rect x="1" y="1" width="14" height="14" rx="1" stroke="currentColor" stroke-width="1.2"/>
-                  <path d="M1 11l4-4 3 3 2-2 5 4" stroke="currentColor" stroke-width="1.2"/>
-                </svg>
-                <span class="drop-zone__preview-name" id="photoName"></span>
-                <button type="button" class="drop-zone__preview-remove" id="photoRemove">Remove</button>
-              </div>
-            </div>
-          </div>
-        </section>
-
         </div><!-- /.form-body -->
 
       </form>
@@ -414,6 +378,21 @@
           <p class="success-card__body">Your maintenance request has been submitted. We'll be in touch within one business day to schedule a visit or follow up with questions.</p>
           <div class="success-card__ref" id="successRef"></div>
           <div class="success-card__details" id="successDetails"></div>
+
+          <div class="drive-upload" id="driveUpload" hidden>
+            <div class="drive-upload__icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 16V8M12 8L9 11M12 8L15 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div class="drive-upload__text">
+              <strong class="drive-upload__heading">Upload Photos &amp; Videos</strong>
+              <p class="drive-upload__hint">Add photos or video of the issue to your dedicated folder — no sign-in required.</p>
+            </div>
+            <a class="drive-upload__btn" id="driveUploadLink" href="#" target="_blank" rel="noopener noreferrer">Open Folder</a>
+          </div>
+
           <button type="button" class="new-request-btn" id="newRequestBtn">Submit another request</button>
         </div>
       </div>

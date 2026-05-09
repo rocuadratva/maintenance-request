@@ -81,58 +81,6 @@
     });
   }
 
-  /* ── File Drop Zone ───────────────────────────────────────────── */
-  function initDropZone() {
-    const zone = document.getElementById('dropZone');
-    const input = document.getElementById('photo');
-    const preview = document.getElementById('photoPreview');
-    const nameEl = document.getElementById('photoName');
-    const removeBtn = document.getElementById('photoRemove');
-
-    if (!zone || !input) return;
-
-    function showPreview(file) {
-      nameEl.textContent = file.name + ' (' + (file.size / 1024).toFixed(0) + ' KB)';
-      preview.classList.add('drop-zone__preview--visible');
-    }
-
-    function clearPreview() {
-      input.value = '';
-      nameEl.textContent = '';
-      preview.classList.remove('drop-zone__preview--visible');
-    }
-
-    input.addEventListener('change', function () {
-      if (input.files[0]) showPreview(input.files[0]);
-    });
-
-    removeBtn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      clearPreview();
-    });
-
-    zone.addEventListener('dragover', function (e) {
-      e.preventDefault();
-      zone.classList.add('drop-zone--dragover');
-    });
-
-    zone.addEventListener('dragleave', function () {
-      zone.classList.remove('drop-zone--dragover');
-    });
-
-    zone.addEventListener('drop', function (e) {
-      e.preventDefault();
-      zone.classList.remove('drop-zone--dragover');
-      const file = e.dataTransfer.files[0];
-      if (file) {
-        const dt = new DataTransfer();
-        dt.items.add(file);
-        input.files = dt.files;
-        showPreview(file);
-      }
-    });
-  }
-
   /* ── Validation ───────────────────────────────────────────────── */
   const REQUIRED_FIELDS = [
     { id: 'property',          errorId: 'property-error' },
@@ -209,11 +157,6 @@
     fd.append('bestTime',          document.getElementById('bestTime').value);
     fd.append('preferredDays',     document.getElementById('preferredDays').value);
 
-    var photoInput = document.getElementById('photo');
-    if (photoInput.files[0]) {
-      fd.append('photo', photoInput.files[0], photoInput.files[0].name);
-    }
-
     return fd;
   }
 
@@ -227,7 +170,13 @@
       throw new Error('Server returned ' + response.status + '. Please try again.');
     }
 
-    return response;
+    try {
+      var data = await response.json();
+      if (Array.isArray(data)) data = data[0];
+      return data || {};
+    } catch (_) {
+      return {};
+    }
   }
 
   /* ── UI State Helpers ─────────────────────────────────────────── */
@@ -254,7 +203,7 @@
     banner.classList.remove('error-banner--visible');
   }
 
-  function showSuccess() {
+  function showSuccess(driveUrl) {
     var form        = document.getElementById('maintenanceForm');
     var footer      = document.getElementById('formFooter');
     var successState = document.getElementById('successState');
@@ -285,6 +234,15 @@
           '<span class="success-detail__val">' + escapeHtml(d[1]) + '</span>';
         detailsContainer.appendChild(row);
       });
+
+      var driveBlock = document.getElementById('driveUpload');
+      var driveLink  = document.getElementById('driveUploadLink');
+      if (driveUrl && driveBlock && driveLink) {
+        driveLink.href = driveUrl;
+        driveBlock.hidden = false;
+      } else if (driveBlock) {
+        driveBlock.hidden = true;
+      }
 
       successState.hidden = false;
     }, 320);
@@ -346,8 +304,9 @@
     });
     document.getElementById('preferredDays').value = '';
 
-    // Clear photo preview
-    document.getElementById('photoPreview').classList.remove('drop-zone__preview--visible');
+    // Reset drive upload block
+    var driveBlock = document.getElementById('driveUpload');
+    if (driveBlock) driveBlock.hidden = true;
 
     // Reset tenant card and hidden sections
     document.getElementById('tenantCard').hidden = true;
@@ -387,7 +346,7 @@
         setLoading(true);
         setTimeout(function () {
           setLoading(false);
-          showSuccess();
+          showSuccess('https://drive.google.com/drive/folders/demo-folder-id');
         }, 1200);
         return;
       }
@@ -395,9 +354,9 @@
       setLoading(true);
       try {
         var fd = buildFormData();
-        await submitForm(fd);
+        var result = await submitForm(fd);
         setLoading(false);
-        showSuccess();
+        showSuccess(result && result.driveFolderUrl ? result.driveFolderUrl : null);
       } catch (err) {
         setLoading(false);
         showErrorBanner(err.message || 'Submission failed. Please try again or contact us directly.');
@@ -740,7 +699,6 @@
     initAccessCodeGate();
     initUrgencyControl();
     initDaysControl();
-    initDropZone();
     initForm();
     initStatusChecker();
     tryRestoreSession();
