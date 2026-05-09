@@ -135,15 +135,15 @@
 
   /* ── Validation ───────────────────────────────────────────────── */
   const REQUIRED_FIELDS = [
-    { id: 'property',        errorId: 'property-error' },
-    { id: 'problemType',     errorId: 'problemType-error' },
-    { id: 'locationInUnit',  errorId: 'locationInUnit-error' },
-    { id: 'description',     errorId: 'description-error' },
-    { id: 'tenantName',      errorId: 'tenantName-error' },
-    { id: 'tenantEmail',     errorId: 'tenantEmail-error' },
-    { id: 'tenantPhone',     errorId: 'tenantPhone-error' },
+    { id: 'property',          errorId: 'property-error' },
+    { id: 'problemType',       errorId: 'problemType-error' },
+    { id: 'locationInUnit',    errorId: 'locationInUnit-error' },
+    { id: 'description',       errorId: 'description-error' },
+    { id: 'tenantName',        errorId: 'tenantName-error' },
+    { id: 'tenantEmail',       errorId: 'tenantEmail-error' },
+    { id: 'tenantPhone',       errorId: 'tenantPhone-error' },
     { id: 'permissionToEnter', errorId: 'permissionToEnter-error' },
-    { id: 'bestTime',        errorId: 'bestTime-error' },
+    { id: 'bestTime',          errorId: 'bestTime-error' },
   ];
 
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -151,11 +151,18 @@
   function validateForm() {
     var errors = [];
 
+    var tenantSectionHidden = (document.getElementById('tenantInfoSection') || {}).hidden;
+    var propertyFieldHidden = (document.getElementById('propertyField') || {}).hidden;
+
     REQUIRED_FIELDS.forEach(function (f) {
       var el = document.getElementById(f.id);
       if (!el) return;
-      var val = el.value.trim();
 
+      // Skip fields auto-filled from access code
+      if (tenantSectionHidden && (f.id === 'tenantName' || f.id === 'tenantEmail' || f.id === 'tenantPhone')) return;
+      if (propertyFieldHidden && f.id === 'property') return;
+
+      var val = el.value.trim();
       var invalid = !val;
       if (f.id === 'tenantEmail' && val && !EMAIL_RE.test(val)) invalid = true;
 
@@ -187,20 +194,20 @@
   function buildFormData() {
     var fd = new FormData();
 
-    fd.append('referenceNumber',  REF_NUMBER);
-    fd.append('accessCode',       verifiedCode);
-    fd.append('submittedAt',      new Date().toISOString());
-    fd.append('property',         document.getElementById('property').value);
-    fd.append('urgency',          document.getElementById('urgency').value);
-    fd.append('problemType',      document.getElementById('problemType').value);
-    fd.append('locationInUnit',   document.getElementById('locationInUnit').value);
-    fd.append('description',      document.getElementById('description').value.trim());
-    fd.append('tenantName',       document.getElementById('tenantName').value.trim());
-    fd.append('tenantEmail',      document.getElementById('tenantEmail').value.trim());
-    fd.append('tenantPhone',      document.getElementById('tenantPhone').value.trim());
-    fd.append('permissionToEnter',document.getElementById('permissionToEnter').value);
-    fd.append('bestTime',         document.getElementById('bestTime').value);
-    fd.append('preferredDays',    document.getElementById('preferredDays').value);
+    fd.append('referenceNumber',   REF_NUMBER);
+    fd.append('accessCode',        verifiedCode);
+    fd.append('submittedAt',       new Date().toISOString());
+    fd.append('property',          document.getElementById('property').value);
+    fd.append('urgency',           document.getElementById('urgency').value);
+    fd.append('problemType',       document.getElementById('problemType').value);
+    fd.append('locationInUnit',    document.getElementById('locationInUnit').value);
+    fd.append('description',       document.getElementById('description').value.trim());
+    fd.append('tenantName',        document.getElementById('tenantName').value.trim());
+    fd.append('tenantEmail',       document.getElementById('tenantEmail').value.trim());
+    fd.append('tenantPhone',       document.getElementById('tenantPhone').value.trim());
+    fd.append('permissionToEnter', document.getElementById('permissionToEnter').value);
+    fd.append('bestTime',          document.getElementById('bestTime').value);
+    fd.append('preferredDays',     document.getElementById('preferredDays').value);
 
     var photoInput = document.getElementById('photo');
     if (photoInput.files[0]) {
@@ -214,7 +221,6 @@
     var response = await fetch(CONFIG.webhookUrl, {
       method: 'POST',
       body: fd,
-      // No Content-Type header — browser sets multipart boundary automatically
     });
 
     if (!response.ok) {
@@ -226,9 +232,9 @@
 
   /* ── UI State Helpers ─────────────────────────────────────────── */
   function setLoading(on) {
-    var btn = document.getElementById('submitBtn');
+    var btn   = document.getElementById('submitBtn');
     var label = document.getElementById('submitLabel');
-    var dots = document.getElementById('dotPulse');
+    var dots  = document.getElementById('dotPulse');
 
     btn.disabled = on;
     label.style.opacity = on ? '0' : '1';
@@ -249,23 +255,24 @@
   }
 
   function showSuccess() {
-    var form = document.getElementById('maintenanceForm');
+    var form        = document.getElementById('maintenanceForm');
+    var footer      = document.getElementById('formFooter');
     var successState = document.getElementById('successState');
 
     form.style.animation = 'fadeSlideOut 300ms ease forwards';
 
     setTimeout(function () {
       form.hidden = true;
+      if (footer) footer.hidden = true;
 
-      // Populate success card
       document.getElementById('successRef').textContent = REF_NUMBER;
 
       var details = [
-        ['Property',    document.getElementById('property').value],
-        ['Urgency',     document.getElementById('urgency').value],
-        ['Problem',     document.getElementById('problemType').value],
-        ['Tenant',      document.getElementById('tenantName').value.trim()],
-        ['Contact',     document.getElementById('tenantEmail').value.trim()],
+        ['Property', document.getElementById('property').value],
+        ['Urgency',  document.getElementById('urgency').value],
+        ['Problem',  document.getElementById('problemType').value],
+        ['Tenant',   document.getElementById('tenantName').value.trim()],
+        ['Contact',  document.getElementById('tenantEmail').value.trim()],
       ];
 
       var detailsContainer = document.getElementById('successDetails');
@@ -291,18 +298,41 @@
       .replace(/"/g, '&quot;');
   }
 
+  function goToScreen1() {
+    // Clear session
+    verifiedCode = '';
+    try { sessionStorage.removeItem('tenantSession'); } catch (e) {}
+
+    // Reset access gate UI
+    var inputRow    = document.getElementById('accessGateInputRow');
+    var badge       = document.getElementById('verifiedBadge');
+    var gate        = document.getElementById('accessGate');
+    var accessInput = document.getElementById('accessCode');
+    if (inputRow)    inputRow.hidden = false;
+    if (badge)       badge.hidden = true;
+    if (gate)        gate.classList.remove('access-gate--verified');
+    if (accessInput) accessInput.value = '';
+
+    // Switch screens
+    document.getElementById('screen2').hidden = true;
+    document.getElementById('screen1').hidden = false;
+    window.scrollTo(0, 0);
+  }
+
   function resetForm() {
-    var form = document.getElementById('maintenanceForm');
+    var form        = document.getElementById('maintenanceForm');
+    var footer      = document.getElementById('formFooter');
     var successState = document.getElementById('successState');
 
     successState.hidden = true;
     form.hidden = false;
     form.style.animation = '';
+    if (footer) footer.hidden = false;
     form.reset();
     clearValidationErrors();
     clearErrorBanner();
 
-    // Reset urgency toggle back to Normal
+    // Reset urgency toggle
     document.querySelectorAll('.urgency-btn').forEach(function (btn) {
       btn.setAttribute('aria-pressed', btn.dataset.value === 'normal' ? 'true' : 'false');
     });
@@ -318,6 +348,23 @@
 
     // Clear photo preview
     document.getElementById('photoPreview').classList.remove('drop-zone__preview--visible');
+
+    // Reset tenant card and hidden sections
+    document.getElementById('tenantCard').hidden = true;
+    document.getElementById('tenantInfoSection').hidden = false;
+    document.getElementById('propertyField').hidden = false;
+
+    // Reset section 1 label
+    var sec1Title = document.querySelector('#section1 .section-title');
+    if (sec1Title) sec1Title.textContent = 'Property & Priority';
+
+    // Restore section numbers
+    document.querySelectorAll('#formBody .section-num').forEach(function (el, idx) {
+      el.textContent = idx + 1;
+    });
+
+    // Go back to screen 1
+    goToScreen1();
   }
 
   /* ── Form Submit Handler ──────────────────────────────────────── */
@@ -337,7 +384,6 @@
       }
 
       if (CONFIG.webhookUrl === 'YOUR_N8N_WEBHOOK_URL') {
-        // Dev mode: simulate success without a real network call
         setLoading(true);
         setTimeout(function () {
           setLoading(false);
@@ -366,33 +412,109 @@
   /* ── Access Code Gate ─────────────────────────────────────────── */
   var verifiedCode = '';
 
+  function applyTenantData(tenantData) {
+    var hasFullProfile = tenantData &&
+      tenantData.tenantName && tenantData.tenantEmail &&
+      tenantData.tenantPhone && tenantData.property;
+
+    if (hasFullProfile) {
+      document.getElementById('tenantName').value  = tenantData.tenantName;
+      document.getElementById('tenantEmail').value = tenantData.tenantEmail;
+      document.getElementById('tenantPhone').value = tenantData.tenantPhone;
+
+      var sel = document.getElementById('property');
+      for (var i = 0; i < sel.options.length; i++) {
+        if (sel.options[i].value === tenantData.property) { sel.selectedIndex = i; break; }
+      }
+
+      document.getElementById('tcName').textContent  = tenantData.tenantName;
+      document.getElementById('tcUnit').textContent  = tenantData.property;
+      document.getElementById('tcEmail').textContent = tenantData.tenantEmail;
+      document.getElementById('tcPhone').textContent = tenantData.tenantPhone;
+      document.getElementById('tenantCard').hidden = false;
+
+      document.getElementById('tenantInfoSection').hidden = true;
+      document.getElementById('propertyField').hidden = true;
+
+      var sec1Title = document.querySelector('#section1 .section-title');
+      if (sec1Title) sec1Title.textContent = 'Priority';
+
+      document.querySelectorAll('#formBody .form-section:not([hidden])').forEach(function (sec, idx) {
+        var num = sec.querySelector('.section-num');
+        if (num) num.textContent = idx + 1;
+      });
+    } else if (tenantData) {
+      if (tenantData.tenantName)  document.getElementById('tenantName').value  = tenantData.tenantName;
+      if (tenantData.tenantEmail) document.getElementById('tenantEmail').value = tenantData.tenantEmail;
+      if (tenantData.tenantPhone) document.getElementById('tenantPhone').value = tenantData.tenantPhone;
+      if (tenantData.property) {
+        var sel2 = document.getElementById('property');
+        for (var j = 0; j < sel2.options.length; j++) {
+          if (sel2.options[j].value === tenantData.property) { sel2.selectedIndex = j; break; }
+        }
+      }
+    }
+  }
+
+  function onVerified(code, tenantData, instant) {
+    verifiedCode = code;
+
+    // Persist session so a page refresh lands on screen 2
+    try {
+      sessionStorage.setItem('tenantSession', JSON.stringify({
+        code: code,
+        tenantData: tenantData || null
+      }));
+    } catch (e) {}
+
+    function switchToScreen2() {
+      document.getElementById('screen1').hidden = true;
+      var s2 = document.getElementById('screen2');
+      s2.hidden = false;
+      window.scrollTo(0, 0);
+    }
+
+    if (instant) {
+      switchToScreen2();
+    } else {
+      // Show verified badge briefly before transitioning
+      var inputRow = document.getElementById('accessGateInputRow');
+      var badge    = document.getElementById('verifiedBadge');
+      var gate     = document.getElementById('accessGate');
+      if (inputRow) inputRow.hidden = true;
+      if (badge)    badge.hidden = false;
+      if (gate)     gate.classList.add('access-gate--verified');
+      setTimeout(switchToScreen2, 500);
+    }
+
+    applyTenantData(tenantData);
+  }
+
+  function tryRestoreSession() {
+    try {
+      var stored = sessionStorage.getItem('tenantSession');
+      if (!stored) return;
+      var session = JSON.parse(stored);
+      if (session && session.code) {
+        onVerified(session.code, session.tenantData || null, true);
+      }
+    } catch (e) {
+      try { sessionStorage.removeItem('tenantSession'); } catch (_) {}
+    }
+  }
+
   function initAccessCodeGate() {
-    var input      = document.getElementById('accessCode');
-    var btn        = document.getElementById('verifyBtn');
-    var btnLabel   = document.getElementById('verifyBtnLabel');
-    var btnDots    = document.getElementById('verifyDotPulse');
-    var inputRow   = document.getElementById('accessGateInputRow');
-    var badge      = document.getElementById('verifiedBadge');
-    var errorEl    = document.getElementById('accessCode-error');
-    var gate       = document.querySelector('.access-gate');
-    var formBody   = document.getElementById('formBody');
-    var formFooter = document.getElementById('formFooter');
+    var input    = document.getElementById('accessCode');
+    var btn      = document.getElementById('verifyBtn');
+    var btnLabel = document.getElementById('verifyBtnLabel');
+    var btnDots  = document.getElementById('verifyDotPulse');
+    var errorEl  = document.getElementById('accessCode-error');
 
     function setVerifying(on) {
       btn.disabled = on;
       btnLabel.style.opacity = on ? '0' : '1';
       btnDots.classList.toggle('access-gate__dots--visible', on);
       input.disabled = on;
-    }
-
-    function onVerified(code) {
-      verifiedCode = code;
-      inputRow.hidden = true;
-      errorEl.classList.remove('field__error--visible');
-      badge.hidden = false;
-      gate.classList.add('access-gate--verified');
-      formBody.hidden = false;
-      formFooter.hidden = false;
     }
 
     async function verify() {
@@ -409,7 +531,7 @@
         setVerifying(true);
         setTimeout(function () {
           setVerifying(false);
-          onVerified(code);
+          onVerified(code, null, false);
         }, 800);
         return;
       }
@@ -426,7 +548,7 @@
         if (Array.isArray(data)) data = data[0];
 
         if (data && data.valid === true) {
-          onVerified(code);
+          onVerified(code, data, false);
         } else {
           errorEl.textContent = 'Invalid access code. Please check with your property manager.';
           errorEl.classList.add('field__error--visible');
@@ -451,10 +573,13 @@
     var skipBtn = document.getElementById('testSkipBtn');
     if (skipBtn) {
       skipBtn.addEventListener('click', function () {
-        onVerified('TEST');
+        onVerified('TEST', {
+          tenantName:  'Jane Smith',
+          tenantEmail: 'jane@example.com',
+          tenantPhone: '(555) 012-3456',
+          property:    'Sunrise Apartments - Unit 101'
+        }, false);
         skipBtn.style.display = 'none';
-        var section5 = document.querySelector('.form-section:nth-of-type(6)');
-        if (section5) section5.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     }
   }
@@ -520,10 +645,10 @@
           });
         } catch (_) { submitted = data.submittedAt; }
       }
-      document.getElementById('statusCardSubmitted').textContent = submitted;
-      document.getElementById('statusCardProperty').textContent    = data.property    || '—';
-      document.getElementById('statusCardProblemType').textContent = data.problemType || '—';
-      document.getElementById('statusCardTenant').textContent      = data.tenantName  || '—';
+      document.getElementById('statusCardSubmitted').textContent    = submitted;
+      document.getElementById('statusCardProperty').textContent     = data.property    || '—';
+      document.getElementById('statusCardProblemType').textContent  = data.problemType || '—';
+      document.getElementById('statusCardTenant').textContent       = data.tenantName  || '—';
 
       var notesWrap = document.getElementById('statusCardNotesWrap');
       var notesBody = document.getElementById('statusCardNotes');
@@ -599,11 +724,9 @@
     }
 
     btn.addEventListener('click', checkStatus);
-
     input.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') { e.preventDefault(); checkStatus(); }
     });
-
     input.addEventListener('input', function () {
       hint.textContent = '';
       input.classList.remove('status-checker__input--error');
@@ -620,5 +743,6 @@
     initDropZone();
     initForm();
     initStatusChecker();
+    tryRestoreSession();
   });
 })();

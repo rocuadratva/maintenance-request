@@ -150,6 +150,43 @@ body::before {
   color: var(--ink-light);
 }
 
+/* ── Compact header (Screen 2) ───────────────────────────────────── */
+.form-header--compact {
+  padding: var(--sp-5) var(--sp-8);
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-bottom: 0;
+  border-radius: 0;
+  border-bottom: 1px solid var(--border);
+  box-shadow: none;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.form-header__title--compact {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+  white-space: nowrap;
+}
+
+.form-header--compact .form-header__eyebrow { display: none; }
+
+.form-header--compact .form-header__meta {
+  margin-top: 0;
+  flex-wrap: nowrap;
+}
+
+/* ── Screen 2 slide-in ───────────────────────────────────────────── */
+#screen2:not([hidden]) {
+  animation: slideUp 280ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
 /* ── Error Banner ────────────────────────────────────────────────── */
 .error-banner {
   display: none;
@@ -752,6 +789,56 @@ body::before {
 @media (max-width: 479px) {
   .access-gate__input-row { flex-direction: column; }
   .access-gate__verify-btn { width: 100%; justify-content: center; }
+}
+
+/* ── Tenant identity card ────────────────────────────────────────── */
+.tenant-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 32px;
+  background: #F0FDF4;
+  border-bottom: 1px solid #BBF7D0;
+}
+
+.tenant-card__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #D1FAE5;
+  color: #059669;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.tenant-card__body { flex: 1; min-width: 0; }
+
+.tenant-card__name {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 2px;
+}
+
+.tenant-card__meta {
+  font-size: 12px;
+  color: var(--ink-muted);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tenant-card__meta--sub { margin-top: 2px; color: var(--ink-light); }
+.tenant-card__sep { opacity: 0.5; }
+
+@media (max-width: 479px) {
+  .tenant-card { padding: 12px 20px; }
 }
 
 /* ── Status badge color tokens ───────────────────────────────────── */
