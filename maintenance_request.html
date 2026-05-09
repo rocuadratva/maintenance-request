@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Maintenance Request</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<main class="page">
+  <div class="form-container" id="formContainer">
+
+    <!-- Header -->
+    <header class="form-header">
+      <span class="form-header__eyebrow">Property Management</span>
+      <h1 class="form-header__title">Maintenance<br>Request</h1>
+      <p class="form-header__subtitle">Submit a request and we'll follow up within one business day. Urgent issues are prioritized.</p>
+      <div class="form-header__meta">
+        <span class="ref-chip" id="refChip">MR-—</span>
+        <span class="form-header__date" id="headerDate"></span>
+      </div>
+    </header>
+
+    <!-- Error Banner -->
+    <div class="error-banner" id="errorBanner" role="alert"></div>
+
+    <!-- Form -->
+    <form id="maintenanceForm" novalidate>
+
+      <!-- Section 1: Property + Urgency -->
+      <section class="form-section">
+        <span class="section-label"><span class="section-num">1</span> Property &amp; Priority</span>
+        <div class="field-group">
+
+          <div class="field">
+            <label class="field__label field__label--required" for="property">Property</label>
+            <select class="field__select" id="property" name="property" required>
+              <option value="" disabled selected>Select your unit</option>
+            </select>
+            <span class="field__error" id="property-error">Please select a property.</span>
+          </div>
+
+          <div class="field">
+            <span class="field__label field__label--required">Urgency</span>
+            <div class="urgency-control" role="group" aria-label="Urgency level">
+              <div class="urgency-control__slider urgency-control__slider--normal" id="urgencySlider"></div>
+              <button type="button" class="urgency-btn" data-value="urgent" aria-pressed="false">Urgent</button>
+              <button type="button" class="urgency-btn" data-value="normal" aria-pressed="true">Normal</button>
+              <button type="button" class="urgency-btn" data-value="minor" aria-pressed="false">Minor</button>
+            </div>
+            <input type="hidden" id="urgency" name="urgency" value="normal" />
+            <span class="field__error" id="urgency-error">Please select an urgency level.</span>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Section 2: Problem Type + Location -->
+      <section class="form-section">
+        <span class="section-label"><span class="section-num">2</span> Problem Details</span>
+        <div class="field-group">
+
+          <div class="field-row field-row--2">
+            <div class="field">
+              <label class="field__label field__label--required" for="problemType">Problem type</label>
+              <select class="field__select" id="problemType" name="problemType" required>
+                <option value="" disabled selected>Select a category</option>
+              </select>
+              <span class="field__error" id="problemType-error">Please select a problem type.</span>
+            </div>
+
+            <div class="field">
+              <label class="field__label field__label--required" for="locationInUnit">Location in unit</label>
+              <select class="field__select" id="locationInUnit" name="locationInUnit" required>
+                <option value="" disabled selected>Select a location</option>
+              </select>
+              <span class="field__error" id="locationInUnit-error">Please select a location.</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Section 3: Description -->
+      <section class="form-section">
+        <span class="section-label"><span class="section-num">3</span> Description</span>
+        <div class="field-group">
+          <div class="field">
+            <label class="field__label field__label--required" for="description">Problem description</label>
+            <textarea
+              class="field__textarea"
+              id="description"
+              name="description"
+              required
+              placeholder="Describe the issue in detail — when it started, how severe it is, and any relevant observations…"
+            ></textarea>
+            <span class="field__error" id="description-error">Please describe the problem.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4: Tenant Info -->
+      <section class="form-section">
+        <span class="section-label"><span class="section-num">4</span> Your Information</span>
+        <div class="field-group">
+
+          <div class="field">
+            <label class="field__label field__label--required" for="tenantName">Full name</label>
+            <input
+              class="field__input"
+              type="text"
+              id="tenantName"
+              name="tenantName"
+              required
+              autocomplete="name"
+              placeholder="Jane Smith"
+            />
+            <span class="field__error" id="tenantName-error">Please enter your name.</span>
+          </div>
+
+          <div class="field-row field-row--2">
+            <div class="field">
+              <label class="field__label field__label--required" for="tenantEmail">Email address</label>
+              <input
+                class="field__input"
+                type="email"
+                id="tenantEmail"
+                name="tenantEmail"
+                required
+                autocomplete="email"
+                placeholder="jane@example.com"
+              />
+              <span class="field__error" id="tenantEmail-error">Please enter a valid email address.</span>
+            </div>
+
+            <div class="field">
+              <label class="field__label field__label--required" for="tenantPhone">Phone number</label>
+              <input
+                class="field__input"
+                type="tel"
+                id="tenantPhone"
+                name="tenantPhone"
+                required
+                autocomplete="tel"
+                placeholder="(555) 000-0000"
+              />
+              <span class="field__error" id="tenantPhone-error">Please enter a phone number.</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Section 5: Entry + Best Time -->
+      <section class="form-section">
+        <span class="section-label"><span class="section-num">5</span> Access &amp; Availability</span>
+        <div class="field-group">
+
+          <div class="field-row field-row--2">
+            <div class="field">
+              <label class="field__label field__label--required" for="permissionToEnter">Permission to enter</label>
+              <select class="field__select" id="permissionToEnter" name="permissionToEnter" required>
+                <option value="" disabled selected>Select an option</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No — please contact me first</option>
+                <option value="Only with notice">Only with notice</option>
+              </select>
+              <span class="field__error" id="permissionToEnter-error">Please select an entry option.</span>
+            </div>
+
+            <div class="field">
+              <label class="field__label field__label--required" for="bestTime">Best time to contact</label>
+              <select class="field__select" id="bestTime" name="bestTime" required>
+                <option value="" disabled selected>Select a time</option>
+                <option value="Morning">Morning (8 am – 12 pm)</option>
+                <option value="Afternoon">Afternoon (12 pm – 5 pm)</option>
+                <option value="Evening">Evening (5 pm – 8 pm)</option>
+              </select>
+              <span class="field__error" id="bestTime-error">Please select a best time.</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Section 6: Photo Upload -->
+      <section class="form-section">
+        <span class="section-label"><span class="section-num">6</span> Photo <span style="font-weight:400;color:var(--ink-light);font-size:12px">(optional)</span></span>
+        <div class="field-group">
+          <div class="field">
+            <div class="drop-zone" id="dropZone">
+              <input
+                class="drop-zone__input"
+                type="file"
+                id="photo"
+                name="photo"
+                accept="image/*,.pdf"
+              />
+              <svg class="drop-zone__icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="5" width="26" height="22" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                <circle cx="11" cy="12" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M3 22l7-7 5 5 4-4 10 7" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+              <p class="drop-zone__label">
+                <strong>Click to upload</strong> or drag and drop<br>
+                JPG, PNG, HEIC, PDF — max 10 MB
+              </p>
+            </div>
+
+            <div class="drop-zone__preview" id="photoPreview">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;opacity:0.5">
+                <rect x="1" y="1" width="14" height="14" rx="1" stroke="currentColor" stroke-width="1.2"/>
+                <path d="M1 11l4-4 3 3 2-2 5 4" stroke="currentColor" stroke-width="1.2"/>
+              </svg>
+              <span class="drop-zone__preview-name" id="photoName"></span>
+              <button type="button" class="drop-zone__preview-remove" id="photoRemove">Remove</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </form>
+
+    <!-- Submit footer (outside form card, its own card) -->
+    <footer class="form-footer">
+      <button type="submit" form="maintenanceForm" class="submit-btn" id="submitBtn">
+        <span class="submit-label" id="submitLabel">Submit Request</span>
+        <div class="dot-pulse" id="dotPulse" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+      </button>
+      <p class="form-footer__note">Fields marked * are required. We'll follow up within one business day.</p>
+    </footer>
+
+    <!-- Success State -->
+    <div class="success-state" id="successState" hidden>
+      <div class="success-card">
+        <div class="success-card__icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 10l4 4 8-8" stroke="currentColor" stroke-width="2" stroke-linecap="square"/>
+          </svg>
+        </div>
+        <h2 class="success-card__title">Request Received</h2>
+        <p class="success-card__body">Your maintenance request has been submitted. We'll be in touch within one business day to schedule a visit or follow up with questions.</p>
+        <div class="success-card__ref" id="successRef"></div>
+        <div class="success-card__details" id="successDetails"></div>
+        <button type="button" class="new-request-btn" id="newRequestBtn">Submit another request</button>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="config.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
