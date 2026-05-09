@@ -628,9 +628,18 @@ body::before {
 }
 
 /* ── Access Code Gate ────────────────────────────────────────────── */
+.form-body {
+  animation: slideUp 300ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
 .access-gate {
   background: var(--accent-light);
   border-bottom: 1px solid var(--accent-mid) !important;
+}
+
+.access-gate--verified {
+  background: var(--success-light);
+  border-bottom: 1px solid #BBF7D0 !important;
 }
 
 .access-gate__inner {
@@ -660,7 +669,57 @@ body::before {
   margin-bottom: var(--sp-2);
 }
 
-.access-gate__input { background: #fff; }
+.access-gate__input { background: #fff; flex: 1; min-width: 0; }
+
+.access-gate__input-row {
+  display: flex;
+  gap: var(--sp-3);
+}
+
+.access-gate__verify-btn {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 10px var(--sp-5);
+  cursor: pointer;
+  transition: background var(--transition), box-shadow var(--transition), transform 80ms ease;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(59,130,246,0.28);
+}
+
+.access-gate__verify-btn:hover:not(:disabled) {
+  background: var(--accent-hover);
+  box-shadow: 0 6px 14px rgba(59,130,246,0.38);
+}
+
+.access-gate__verify-btn:active:not(:disabled) { transform: translateY(1px); box-shadow: none; }
+.access-gate__verify-btn:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
+
+.access-gate__dots { display: none; }
+.access-gate__dots--visible { display: flex; }
+
+.access-gate__verified-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--success);
+  margin-top: var(--sp-2);
+}
+
+@media (max-width: 479px) {
+  .access-gate__input-row { flex-direction: column; }
+  .access-gate__verify-btn { width: 100%; justify-content: center; }
+}
 
 /* ── Status badge color tokens ───────────────────────────────────── */
 :root {

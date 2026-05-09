@@ -117,7 +117,6 @@
 
   /* ── Validation ───────────────────────────────────────────────── */
   const REQUIRED_FIELDS = [
-    { id: 'accessCode',      errorId: 'accessCode-error' },
     { id: 'property',        errorId: 'property-error' },
     { id: 'problemType',     errorId: 'problemType-error' },
     { id: 'locationInUnit',  errorId: 'locationInUnit-error' },
@@ -141,10 +140,6 @@
 
       var invalid = !val;
       if (f.id === 'tenantEmail' && val && !EMAIL_RE.test(val)) invalid = true;
-      if (f.id === 'accessCode' && val) {
-        var validCodes = (CONFIG.accessCodes || []).map(function (c) { return c.toUpperCase(); });
-        if (validCodes.indexOf(val.toUpperCase()) === -1) invalid = true;
-      }
 
       if (invalid) {
         el.setAttribute('aria-invalid', 'true');
@@ -175,6 +170,7 @@
     var fd = new FormData();
 
     fd.append('referenceNumber',  REF_NUMBER);
+    fd.append('accessCode',       verifiedCode);
     fd.append('submittedAt',      new Date().toISOString());
     fd.append('property',         document.getElementById('property').value);
     fd.append('urgency',          document.getElementById('urgency').value);
@@ -342,6 +338,91 @@
     });
   }
 
+  /* ── Access Code Gate ─────────────────────────────────────────── */
+  var verifiedCode = '';
+
+  function initAccessCodeGate() {
+    var input      = document.getElementById('accessCode');
+    var btn        = document.getElementById('verifyBtn');
+    var btnLabel   = document.getElementById('verifyBtnLabel');
+    var btnDots    = document.getElementById('verifyDotPulse');
+    var inputRow   = document.getElementById('accessGateInputRow');
+    var badge      = document.getElementById('verifiedBadge');
+    var errorEl    = document.getElementById('accessCode-error');
+    var gate       = document.querySelector('.access-gate');
+    var formBody   = document.getElementById('formBody');
+    var formFooter = document.getElementById('formFooter');
+
+    function setVerifying(on) {
+      btn.disabled = on;
+      btnLabel.style.opacity = on ? '0' : '1';
+      btnDots.classList.toggle('access-gate__dots--visible', on);
+      input.disabled = on;
+    }
+
+    function onVerified(code) {
+      verifiedCode = code;
+      inputRow.hidden = true;
+      errorEl.classList.remove('field__error--visible');
+      badge.hidden = false;
+      gate.classList.add('access-gate--verified');
+      formBody.hidden = false;
+      formFooter.hidden = false;
+    }
+
+    async function verify() {
+      var code = input.value.trim();
+      if (!code) {
+        errorEl.textContent = 'Please enter your access code.';
+        errorEl.classList.add('field__error--visible');
+        return;
+      }
+      errorEl.classList.remove('field__error--visible');
+
+      // Dev mode — simulate valid when webhook not configured
+      if (!CONFIG.verifyWebhookUrl || CONFIG.verifyWebhookUrl === 'YOUR_N8N_VERIFY_WEBHOOK_URL') {
+        setVerifying(true);
+        setTimeout(function () {
+          setVerifying(false);
+          onVerified(code);
+        }, 800);
+        return;
+      }
+
+      setVerifying(true);
+      try {
+        var response = await fetch(CONFIG.verifyWebhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: code }),
+        });
+
+        var data = await response.json();
+        if (Array.isArray(data)) data = data[0];
+
+        if (data && data.valid === true) {
+          onVerified(code);
+        } else {
+          errorEl.textContent = 'Invalid access code. Please check with your property manager.';
+          errorEl.classList.add('field__error--visible');
+        }
+      } catch (err) {
+        errorEl.textContent = 'Unable to verify code. Please try again.';
+        errorEl.classList.add('field__error--visible');
+      } finally {
+        setVerifying(false);
+      }
+    }
+
+    btn.addEventListener('click', verify);
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); verify(); }
+    });
+    input.addEventListener('input', function () {
+      errorEl.classList.remove('field__error--visible');
+    });
+  }
+
   /* ── Status Checker ───────────────────────────────────────────── */
   function initStatusChecker() {
     var input    = document.getElementById('statusRefInput');
@@ -497,6 +578,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     populateSelects();
     initHeader();
+    initAccessCodeGate();
     initUrgencyControl();
     initDropZone();
     initForm();

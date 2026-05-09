@@ -40,20 +40,36 @@
           <div class="field access-gate__field">
             <label class="field__label field__label--required" for="accessCode">Access Code</label>
             <p class="access-gate__hint">Provided by your property manager when you moved in.</p>
-            <input
-              class="field__input access-gate__input"
-              type="text"
-              id="accessCode"
-              name="accessCode"
-              required
-              autocomplete="off"
-              spellcheck="false"
-              placeholder="Enter your access code"
-            />
+            <div class="access-gate__input-row" id="accessGateInputRow">
+              <input
+                class="field__input access-gate__input"
+                type="text"
+                id="accessCode"
+                name="accessCode"
+                autocomplete="off"
+                spellcheck="false"
+                placeholder="Enter your access code"
+              />
+              <button type="button" class="access-gate__verify-btn" id="verifyBtn">
+                <span id="verifyBtnLabel">Verify</span>
+                <div class="dot-pulse access-gate__dots" id="verifyDotPulse" aria-hidden="true">
+                  <span></span><span></span><span></span>
+                </div>
+              </button>
+            </div>
             <span class="field__error" id="accessCode-error">Invalid access code. Please check with your property manager.</span>
+            <div class="access-gate__verified-badge" id="verifiedBadge" hidden>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <circle cx="7" cy="7" r="6" fill="#16A34A"/>
+                <path d="M4 7l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Access code verified — please complete the form below.
+            </div>
           </div>
         </div>
       </section>
+
+      <div class="form-body" id="formBody" hidden>
 
       <!-- Section 1: Property + Urgency -->
       <section class="form-section">
@@ -247,10 +263,12 @@
         </div>
       </section>
 
+      </div><!-- /.form-body -->
+
     </form>
 
     <!-- Submit footer (outside form card, its own card) -->
-    <footer class="form-footer">
+    <footer class="form-footer" id="formFooter" hidden>
       <button type="submit" form="maintenanceForm" class="submit-btn" id="submitBtn">
         <span class="submit-label" id="submitLabel">Submit Request</span>
         <div class="dot-pulse" id="dotPulse" aria-hidden="true">
