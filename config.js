@@ -3,19 +3,6 @@ const CONFIG = {
   statusWebhookUrl: 'YOUR_N8N_STATUS_WEBHOOK_URL',
   verifyWebhookUrl: 'YOUR_N8N_VERIFY_WEBHOOK_URL',
 
-  properties: [
-    'Sunrise Apartments - Unit 101',
-    'Sunrise Apartments - Unit 102',
-    'Sunrise Apartments - Unit 103',
-    'Sunrise Apartments - Unit 201',
-    'Sunrise Apartments - Unit 202',
-    'Sunrise Apartments - Unit 203',
-    'Maple Street House - 14 Maple St',
-    'Maple Street House - 16 Maple St',
-    'Cedar Ridge Duplex - 42A Cedar Ridge',
-    'Cedar Ridge Duplex - 42B Cedar Ridge',
-  ],
-
   problemTypes: [
     'Plumbing – Leak or drip',
     'Plumbing – Clogged drain',

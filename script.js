@@ -23,7 +23,6 @@
   }
 
   function populateSelects() {
-    populateSelect('property', CONFIG.properties);
     populateSelect('problemType', CONFIG.problemTypes);
     populateSelect('locationInUnit', CONFIG.locations);
   }
@@ -63,6 +62,19 @@
     });
   }
 
+  /* ── Recurring Issue Toggle ──────────────────────────────────── */
+  function initRecurringControl() {
+    var btns = document.querySelectorAll('[data-recurring]');
+    var hidden = document.getElementById('recurringIssue');
+    btns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        btns.forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+        btn.setAttribute('aria-pressed', 'true');
+        hidden.value = btn.dataset.recurring;
+      });
+    });
+  }
+
   /* ── Preferred Days Control ──────────────────────────────────── */
   function initDaysControl() {
     const btns = document.querySelectorAll('.day-btn');
@@ -83,7 +95,6 @@
 
   /* ── Validation ───────────────────────────────────────────────── */
   const REQUIRED_FIELDS = [
-    { id: 'property',          errorId: 'property-error' },
     { id: 'problemType',       errorId: 'problemType-error' },
     { id: 'locationInUnit',    errorId: 'locationInUnit-error' },
     { id: 'description',       errorId: 'description-error' },
@@ -100,7 +111,6 @@
     var errors = [];
 
     var tenantSectionHidden = (document.getElementById('tenantInfoSection') || {}).hidden;
-    var propertyFieldHidden = (document.getElementById('propertyField') || {}).hidden;
 
     REQUIRED_FIELDS.forEach(function (f) {
       var el = document.getElementById(f.id);
@@ -108,7 +118,6 @@
 
       // Skip fields auto-filled from access code
       if (tenantSectionHidden && (f.id === 'tenantName' || f.id === 'tenantEmail' || f.id === 'tenantPhone')) return;
-      if (propertyFieldHidden && f.id === 'property') return;
 
       var val = el.value.trim();
       var invalid = !val;
@@ -156,6 +165,8 @@
     fd.append('permissionToEnter', document.getElementById('permissionToEnter').value);
     fd.append('bestTime',          document.getElementById('bestTime').value);
     fd.append('preferredDays',     document.getElementById('preferredDays').value);
+    fd.append('recurringIssue',    document.getElementById('recurringIssue').value);
+    fd.append('entryInstructions', document.getElementById('entryInstructions').value.trim());
 
     return fd;
   }
@@ -311,16 +322,15 @@
     // Reset tenant card and hidden sections
     document.getElementById('tenantCard').hidden = true;
     document.getElementById('tenantInfoSection').hidden = false;
-    document.getElementById('propertyField').hidden = false;
 
-    // Reset section 1 label
-    var sec1Title = document.querySelector('#section1 .section-title');
-    if (sec1Title) sec1Title.textContent = 'Property & Priority';
-
-    // Restore section numbers
-    document.querySelectorAll('#formBody .section-num').forEach(function (el, idx) {
-      el.textContent = idx + 1;
+    // Reset recurring toggle
+    document.querySelectorAll('[data-recurring]').forEach(function (btn) {
+      btn.setAttribute('aria-pressed', btn.dataset.recurring === 'no' ? 'true' : 'false');
     });
+    document.getElementById('recurringIssue').value = 'no';
+
+    // Reset hidden property input
+    document.getElementById('property').value = '';
 
     // Go back to screen 1
     goToScreen1();
@@ -383,11 +393,7 @@
       document.getElementById('tenantName').value  = tenantData.tenantName;
       document.getElementById('tenantEmail').value = tenantData.tenantEmail;
       document.getElementById('tenantPhone').value = tenantData.tenantPhone;
-
-      var sel = document.getElementById('property');
-      for (var i = 0; i < sel.options.length; i++) {
-        if (sel.options[i].value === tenantData.property) { sel.selectedIndex = i; break; }
-      }
+      document.getElementById('property').value    = tenantData.property;
 
       document.getElementById('tcName').textContent  = tenantData.tenantName;
       document.getElementById('tcUnit').textContent  = tenantData.property;
@@ -396,25 +402,11 @@
       document.getElementById('tenantCard').hidden = false;
 
       document.getElementById('tenantInfoSection').hidden = true;
-      document.getElementById('propertyField').hidden = true;
-
-      var sec1Title = document.querySelector('#section1 .section-title');
-      if (sec1Title) sec1Title.textContent = 'Priority';
-
-      document.querySelectorAll('#formBody .form-section:not([hidden])').forEach(function (sec, idx) {
-        var num = sec.querySelector('.section-num');
-        if (num) num.textContent = idx + 1;
-      });
     } else if (tenantData) {
       if (tenantData.tenantName)  document.getElementById('tenantName').value  = tenantData.tenantName;
       if (tenantData.tenantEmail) document.getElementById('tenantEmail').value = tenantData.tenantEmail;
       if (tenantData.tenantPhone) document.getElementById('tenantPhone').value = tenantData.tenantPhone;
-      if (tenantData.property) {
-        var sel2 = document.getElementById('property');
-        for (var j = 0; j < sel2.options.length; j++) {
-          if (sel2.options[j].value === tenantData.property) { sel2.selectedIndex = j; break; }
-        }
-      }
+      if (tenantData.property)    document.getElementById('property').value    = tenantData.property;
     }
   }
 
@@ -552,17 +544,6 @@
     if (!btn) return;
 
     btn.addEventListener('click', function () {
-      // Property (only if visible)
-      var propertyField = document.getElementById('propertyField');
-      if (!propertyField || !propertyField.hidden) {
-        var propertySel = document.getElementById('property');
-        for (var i = 0; i < propertySel.options.length; i++) {
-          if (propertySel.options[i].value === 'Sunrise Apartments - Unit 101') {
-            propertySel.selectedIndex = i; break;
-          }
-        }
-      }
-
       // Urgency
       document.getElementById('urgency').value = 'urgent';
       document.querySelectorAll('.urgency-btn').forEach(function (b) {
@@ -593,6 +574,15 @@
         document.getElementById('tenantEmail').value = 'jane@example.com';
         document.getElementById('tenantPhone').value = '(555) 012-3456';
       }
+
+      // Recurring issue
+      document.getElementById('recurringIssue').value = 'yes';
+      document.querySelectorAll('[data-recurring]').forEach(function (b) {
+        b.setAttribute('aria-pressed', b.dataset.recurring === 'yes' ? 'true' : 'false');
+      });
+
+      // Entry instructions
+      document.getElementById('entryInstructions').value = 'Key under mat. Please call 10 min ahead.';
 
       // Access & availability
       document.getElementById('permissionToEnter').value = 'Yes';
@@ -771,6 +761,7 @@
     initHeader();
     initAccessCodeGate();
     initUrgencyControl();
+    initRecurringControl();
     initDaysControl();
     initForm();
     initTestFillBtn();

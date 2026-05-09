@@ -191,18 +191,12 @@
 
         <div class="form-body" id="formBody">
 
-        <!-- Section 1: Property + Urgency -->
+        <!-- Section 1: Priority -->
         <section class="form-section" id="section1">
-          <span class="section-label"><span class="section-num">1</span> <span class="section-title">Property &amp; Priority</span></span>
+          <span class="section-label"><span class="section-num">1</span> <span class="section-title">Priority</span></span>
           <div class="field-group">
 
-            <div class="field" id="propertyField">
-              <label class="field__label field__label--required" for="property">Property</label>
-              <select class="field__select" id="property" name="property" required>
-                <option value="" disabled selected>Select your unit</option>
-              </select>
-              <span class="field__error" id="property-error">Please select a property.</span>
-            </div>
+            <input type="hidden" id="property" name="property">
 
             <div class="field">
               <span class="field__label field__label--required">Urgency</span>
@@ -240,6 +234,16 @@
                 </select>
                 <span class="field__error" id="locationInUnit-error">Please select a location.</span>
               </div>
+            </div>
+
+            <div class="field">
+              <span class="field__label">Has this issue happened before?</span>
+              <div class="urgency-control" role="group" aria-label="Recurring issue">
+                <div class="urgency-control__slider" id="recurringSlider"></div>
+                <button type="button" class="urgency-btn" data-value="urgent" data-recurring="yes" aria-pressed="false">Yes</button>
+                <button type="button" class="urgency-btn" data-value="normal" data-recurring="no" aria-pressed="true">No</button>
+              </div>
+              <input type="hidden" id="recurringIssue" name="recurringIssue" value="no">
             </div>
 
           </div>
@@ -342,6 +346,18 @@
                 </select>
                 <span class="field__error" id="bestTime-error">Please select a best time.</span>
               </div>
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="entryInstructions">Entry instructions</label>
+              <p class="access-gate__hint">e.g. key under mat, dog in unit — call first, building code is 1234</p>
+              <input
+                class="field__input"
+                type="text"
+                id="entryInstructions"
+                name="entryInstructions"
+                placeholder="Any special instructions for the technician?"
+              />
             </div>
 
             <div class="field">
