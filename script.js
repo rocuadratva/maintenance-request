@@ -366,6 +366,9 @@
     document.getElementById('newRequestBtn').addEventListener('click', function () {
       resetForm();
     });
+
+    var backBtn = document.getElementById('backBtn');
+    if (backBtn) backBtn.addEventListener('click', function () { goToScreen1(); });
   }
 
   /* ── Access Code Gate ─────────────────────────────────────────── */
