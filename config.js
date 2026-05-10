@@ -1,7 +1,7 @@
 const CONFIG = {
-  webhookUrl: 'https://n8n.srv1326537.hstgr.cloud/webhook-test/maintenance-submit',
-  statusWebhookUrl: 'YOUR_N8N_STATUS_WEBHOOK_URL',
-  verifyWebhookUrl: 'YOUR_N8N_VERIFY_WEBHOOK_URL',
+  webhookUrl: 'https://n8n.srv1326537.hstgr.cloud/webhook/maintenance-submit',
+  statusWebhookUrl: 'https://n8n.srv1326537.hstgr.cloud/webhook/check-status',
+  verifyWebhookUrl: 'https://n8n.srv1326537.hstgr.cloud/webhook/verify-access',
 
   problemTypes: [
     'Plumbing – Leak or drip',
