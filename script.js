@@ -735,6 +735,19 @@
 
         var data = await response.json();
         if (Array.isArray(data)) data = data[0];
+        if (data && data.property_reference_number !== undefined) {
+          data = {
+            referenceNumber: data.property_reference_number || data.name,
+            status:          data.property_status,
+            submittedAt:     data.property_submitted_at && data.property_submitted_at.start
+                               ? data.property_submitted_at.start
+                               : data.property_submitted_at,
+            property:        data.property_property,
+            problemType:     data.property_problem_type,
+            tenantName:      data.property_tenant_name,
+            notes:           data.property_manager_notes || '',
+          };
+        }
         if (!data || !data.referenceNumber) { showNotFound(); return; }
 
         showCard(data);
