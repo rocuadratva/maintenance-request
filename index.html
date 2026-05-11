@@ -166,6 +166,13 @@
       <!-- Error Banner -->
       <div class="error-banner" id="errorBanner" role="alert"></div>
 
+      <!-- DEV: Test Fill Panel — remove before going live -->
+      <div id="testFillPanel" style="display:flex;gap:8px;flex-wrap:wrap;padding:10px 0 4px;">
+        <button type="button" id="testFill1" style="font-size:12px;padding:5px 10px;background:#ef4444;color:#fff;border:none;border-radius:6px;cursor:pointer;">🔴 Test 1: Urgent Plumbing</button>
+        <button type="button" id="testFill2" style="font-size:12px;padding:5px 10px;background:#f59e0b;color:#fff;border:none;border-radius:6px;cursor:pointer;">🟡 Test 2: Electrical Outlet</button>
+        <button type="button" id="testFill3" style="font-size:12px;padding:5px 10px;background:#3b82f6;color:#fff;border:none;border-radius:6px;cursor:pointer;">🔵 Test 3: HVAC – No Cooling</button>
+      </div>
+
       <!-- Form -->
       <form id="maintenanceForm" novalidate>
 
@@ -422,5 +429,6 @@
 
 <script src="config.js"></script>
 <script src="script.js"></script>
+<script src="test-buttons.js"></script>
 </body>
 </html>
