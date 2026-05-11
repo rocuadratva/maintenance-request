@@ -999,6 +999,7 @@ body::before {
   animation: slideUp 300ms cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
+.status-result__not-found[hidden] { display: none; }
 .status-result__not-found {
   display: flex;
   align-items: flex-start;
