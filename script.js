@@ -378,7 +378,7 @@
     });
 
     var backBtn = document.getElementById('backBtn');
-    if (backBtn) backBtn.addEventListener('click', function () { goToScreen1(); });
+    if (backBtn) backBtn.addEventListener('click', function () { resetForm(); });
   }
 
   /* ── Access Code Gate ─────────────────────────────────────────── */
