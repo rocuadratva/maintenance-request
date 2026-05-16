@@ -799,6 +799,7 @@ body::before {
   color: var(--success);
   margin-top: var(--sp-2);
 }
+.access-gate__verified-badge[hidden] { display: none; }
 
 @media (max-width: 479px) {
   .access-gate__input-row { flex-direction: column; }
