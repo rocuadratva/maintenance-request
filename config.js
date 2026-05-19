@@ -1,5 +1,5 @@
 const CONFIG = {
-  webhookUrl: 'https://n8n.srv1326537.hstgr.cloud/webhook/maintenance-submit',
+  webhookUrl: 'https://n8n.srv1326537.hstgr.cloud/webhook/maintenance-submit-v2',
   statusWebhookUrl: 'https://n8n.srv1326537.hstgr.cloud/webhook/check-status',
   verifyWebhookUrl: 'https://n8n.srv1326537.hstgr.cloud/webhook/verify-access',
 
